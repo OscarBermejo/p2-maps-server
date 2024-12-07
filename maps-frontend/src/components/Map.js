@@ -172,15 +172,19 @@ function Map({ restaurants, selectedCity }) {
                     activePopup.current.remove();
                 }
 
-                // Center the map on the marker
+                // First center the map on the marker
                 map.current.flyTo({
                     center: [coordinates[1], coordinates[0]],
-                    zoom: map.current.getZoom()
+                    zoom: map.current.getZoom(),
+                    duration: 500  // Animation duration in milliseconds
                 });
-                
-                // Show popup and track it
-                popup.setLngLat(map.current.getCenter()).addTo(map.current);
-                activePopup.current = popup;
+
+                // Wait for the map movement to finish before showing the popup
+                setTimeout(() => {
+                    // Show popup in center of screen
+                    popup.setLngLat(map.current.getCenter()).addTo(map.current);
+                    activePopup.current = popup;
+                }, 500); // This timeout should match the flyTo duration
             });
 
             markers.current.push(marker);
