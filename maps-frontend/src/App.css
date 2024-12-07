@@ -1,0 +1,74 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+/* Add these styles for the map */
+.leaflet-container {
+  height: calc(100vh - 80px);
+  width: 100%;
+}
+
+/* Custom map styles */
+.map-container {
+  background-color: #9b5b5b;  /* Dark background */
+}
+
+/* Custom popup styles */
+.leaflet-popup-content-wrapper {
+  background-color: #3b3e4f;  /* Dark popup background */
+  color: #ffffff;  /* Light text */
+}
+
+.leaflet-popup-tip {
+  background-color: #2a2a2a;  /* Dark popup tip */
+}
+
+.app-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.app-title {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  color: white;
+  font-size: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  padding: 10px 20px;
+  background-color: rgba(42, 42, 42, 0.8);
+  border-radius: 8px;
+
+}
+
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Search box hover effects */
+input[type="text"] {
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:hover {
+  border-color: #ff0050;
+}
+
+input[type="text"]:focus {
+  border-color: #ff0050;
+  box-shadow: 0 0 0 2px rgba(255, 0, 80, 0.2);
+}

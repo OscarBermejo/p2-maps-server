@@ -1,0 +1,29 @@
+.search-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.search-input {
+    padding: 10px 15px;
+    width: 250px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(42, 42, 42, 0.9);
+    color: white;
+    font-size: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    background-color: rgba(42, 42, 42, 1);
+    box-shadow: 0 2px 12px rgba(255, 0, 80, 0.3);
+    width: 300px;
+}
+
+.search-input::placeholder {
+    color: #cccccc;
+}
