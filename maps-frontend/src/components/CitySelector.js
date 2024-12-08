@@ -4,27 +4,25 @@ import './CitySelector.css';
 function CitySelector({ cities, onSelectCity, onClose }) {
     return (
         <div className="city-selector-overlay">
-            <div className="city-selector-modal">
-                <h2>Select a City</h2>
-                <p>Choose a city to explore TikTok restaurants:</p>
-                <select 
-                    onChange={(e) => onSelectCity(e.target.value)}
-                    className="city-select"
-                    defaultValue=""
-                >
-                    <option value="" disabled>Select a city...</option>
-                    {cities
-                        .filter(city => city) // Remove any null or empty values
-                        .sort() // Sort alphabetically
-                        .map((city, index) => (
+            <div className="city-selector-container">
+                <div className="content-container">
+                    <div className="city-selector-description">
+                        <h1>TikTok Restaurant Maps</h1>
+                        <p>Discover restaurants that have gone viral on TikTok! Select a city to explore food spots that have been featured in popular TikTok videos.</p>
+                    </div>
+                    <h2>Select a City</h2>
+                    <select 
+                        onChange={(e) => onSelectCity(e.target.value)}
+                        className="city-select"
+                    >
+                        <option value="">Choose a city...</option>
+                        {cities.map((city, index) => (
                             <option key={index} value={city}>
                                 {city}
                             </option>
-                    ))}
-                </select>
-                <button onClick={onClose} className="close-button">
-                    Close
-                </button>
+                        ))}
+                    </select>
+                </div>
             </div>
         </div>
     );
