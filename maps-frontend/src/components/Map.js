@@ -21,6 +21,7 @@ function Map({ restaurants, selectedCity }) {
     const markers = useRef([]);
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const activePopup = useRef(null);
+    const [visitedRestaurants, setVisitedRestaurants] = useState(new Set());
 
     // Initialize map
     useEffect(() => {
@@ -160,13 +161,17 @@ function Map({ restaurants, selectedCity }) {
 
             // Create marker and add click event
             const el = document.createElement('div');
-            el.className = 'custom-marker';
+            el.className = `custom-marker${visitedRestaurants.has(restaurant.id) ? ' visited' : ''}`;
 
             const marker = new mapboxgl.Marker(el)
                 .setLngLat([coordinates[1], coordinates[0]])
                 .addTo(map.current);
 
             marker.getElement().addEventListener('click', () => {
+                // Mark restaurant as visited
+                setVisitedRestaurants(prev => new Set(prev).add(restaurant.id));
+                el.classList.add('visited');
+
                 // If there's already an active popup, remove it
                 if (activePopup.current) {
                     activePopup.current.remove();
@@ -198,7 +203,7 @@ function Map({ restaurants, selectedCity }) {
                 activePopup.current = null;
             }
         };
-    }, [restaurants]);
+    }, [restaurants, visitedRestaurants]);
 
     const handleSearch = async (term) => {
         setSearchTerm(term);
