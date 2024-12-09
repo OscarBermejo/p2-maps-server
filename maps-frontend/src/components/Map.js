@@ -42,7 +42,11 @@ function Map({ restaurants, selectedCity }) {
         if (!map.current || !selectedCity) return;
 
         const flyToCity = async () => {
-            logger.info('Flying to selected city', { city: selectedCity });
+            logger.info(`City selected: ${selectedCity}`, {
+                event_type: 'city_selection',
+                city: selectedCity,
+                timestamp: new Date().toISOString()
+            });
             try {
                 const response = await axios.get(
                     `https://api.mapbox.com/geocoding/v5/mapbox.places/${selectedCity}.json?access_token=${mapboxgl.accessToken}`
@@ -171,6 +175,20 @@ function Map({ restaurants, selectedCity }) {
                 .addTo(map.current);
 
             marker.getElement().addEventListener('click', () => {
+                logger.info(`Restaurant clicked: ${restaurant.name} (ID: ${restaurant.id})`, {
+                    event_type: 'restaurant_click',
+                    restaurant: {
+                        id: restaurant.id,
+                        name: restaurant.name,
+                        location: restaurant.location,
+                        coordinates: restaurant.coordinates,
+                        rating: restaurant.rating,
+                        price_level: restaurant.price_level
+                    }
+                });
+                // Log the restaurant click
+                logger.info('Restaurant clicked', { restaurantId: restaurant.id, restaurantName: restaurant.name });
+
                 // Mark restaurant as visited
                 setVisitedRestaurants(prev => new Set(prev).add(restaurant.id));
                 el.classList.add('visited');
@@ -209,7 +227,11 @@ function Map({ restaurants, selectedCity }) {
     }, [restaurants, visitedRestaurants]);
 
     const handleSearch = async (term) => {
-        logger.info('Search initiated', { searchTerm: term });
+        logger.info('Search performed', {
+            event_type: 'search',
+            search_term: term,
+            results_count: searchResults.length
+        });
         setSearchTerm(term);
         
         if (term.length > 2) {
@@ -245,6 +267,13 @@ function Map({ restaurants, selectedCity }) {
     };
 
     const handleResultSelect = (result) => {
+        logger.info('Search result selected', {
+            event_type: 'search_selection',
+            selected_item: {
+                type: result.type,
+                name: result.name
+            }
+        });
         if (result.type === 'location') {
             map.current.flyTo({
                 center: result.coordinates,

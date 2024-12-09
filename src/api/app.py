@@ -2,6 +2,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+from datetime import datetime  
 from src.models.models import RestaurantSchema, Restaurant, Video
 from src.database import get_db
 from sqlalchemy.orm import Session
@@ -89,3 +90,12 @@ async def get_cities(db: Session = Depends(get_db)):
         logger.error(f"Error fetching cities: {str(e)}", exc_info=True)
         raise
 
+
+@app.post("/log")
+async def log_frontend_event(event: dict):
+    logger.info(f"Frontend: {event.get('message', 'No message')}", extra={
+        "frontend_data": event.get('data', {}),
+        "session_id": event.get('data', {}).get('session_id'),
+        "timestamp": event.get('timestamp', datetime.now().isoformat())
+    })
+    return {"status": "logged"}
