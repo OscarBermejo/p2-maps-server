@@ -13,10 +13,9 @@ import time
 from dataclasses import dataclass, field
 from typing import Dict, Tuple
 from pathlib import Path
+from ...utils.logger_config import setup_cloudwatch_logging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_cloudwatch_logging()
 
 # Configuration
 @dataclass
@@ -70,36 +69,32 @@ def measure_time(func):
 
 class VideoDownloader:
     def __init__(self, config: DownloadConfig = DownloadConfig()):
-        print("Initializing VideoDownloader...")
+        logger.info("Initializing VideoDownloader")
         self.config = config
         self.ssl_context = ssl.create_default_context(cafile=certifi.where())
 
     @retry_with_backoff(max_retries=3)
     async def extract_video_id(self, url: str) -> str:
-        print(f"Extracting video ID from URL: {url}")
-        with yt_dlp.YoutubeDL(self.config.ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            print(f"Extracted video ID: {info['id']}")
-            return info['id']
+        logger.info(f"Extracting video ID from URL: {url}")
+        try:
+            with yt_dlp.YoutubeDL(self.config.ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                logger.info(f"Successfully extracted video ID: {info['id']}")
+                return info['id']
+        except Exception as e:
+            logger.error(f"Failed to extract video ID: {str(e)}", exc_info=True)
+            raise
 
     @retry_with_backoff(max_retries=3)
     async def download_video(self, url: str, video_id: str) -> str:
-        print(f"Starting video download for ID: {video_id}")
-        output_file = f"{self.config.video_path}/{video_id}.mp4"
-        ydl_opts = {
-            **self.config.ydl_opts,
-            'format': 'bestvideo+bestaudio/best',
-            'outtmpl': output_file
-        }
-        
-        def _download():
-            print("Downloading video...")
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
-            print(f"Video downloaded to: {output_file}")
+        logger.info(f"Starting video download for ID: {video_id}")
+        try:
+            output_file = await self._download_implementation(url, video_id)
+            logger.info(f"Successfully downloaded video to: {output_file}")
             return output_file
-        
-        return await asyncio.to_thread(_download)
+        except Exception as e:
+            logger.error(f"Video download failed: {str(e)}", exc_info=True)
+            raise
 
     @retry_with_backoff(max_retries=3)
     async def extract_description(self, url: str) -> str:
@@ -165,41 +160,47 @@ class VideoDownloader:
 
     @measure_time
     async def process(self, url: str) -> tuple:
-        print(f"\n=== Starting video processing for URL: {url} ===")
-        
-        # First extract all video info to get creator details
-        with yt_dlp.YoutubeDL(self.config.ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            video_id = info['id']
-            creator_name = f"@{info['uploader']}" if info.get('uploader') else None
-            creator_id = info.get('uploader_id')
-        
-        print("Starting concurrent video download and description extraction...")
-        video_file, description = await asyncio.gather(
-            self.download_video(url, video_id),
-            self.extract_description(url)
-        )
-        
-        print("Starting audio extraction...")
-        audio_file = await self.extract_audio(video_file)
-        
-        print("\n=== Video processing completed ===")
-        print(f"Video ID: {video_id}")
-        print(f"Video file: {video_file}")
-        print(f"Audio file: {audio_file}")
-        print(f"Description length: {len(description)} characters")
-        
+        logger.info(f"Starting video processing for URL: {url}")
         try:
-            creator_info = {
-                'creator_name': creator_name,
-                'creator_id': creator_id,
-                'view_count': info.get('view_count')  # Also getting view count from the API
-            }
+            print(f"\n=== Starting video processing for URL: {url} ===")
             
-            return video_id, video_file, audio_file, description, creator_info
+            # First extract all video info to get creator details
+            with yt_dlp.YoutubeDL(self.config.ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                video_id = info['id']
+                creator_name = f"@{info['uploader']}" if info.get('uploader') else None
+                creator_id = info.get('uploader_id')
             
+            print("Starting concurrent video download and description extraction...")
+            video_file, description = await asyncio.gather(
+                self.download_video(url, video_id),
+                self.extract_description(url)
+            )
+            
+            print("Starting audio extraction...")
+            audio_file = await self.extract_audio(video_file)
+            
+            print("\n=== Video processing completed ===")
+            print(f"Video ID: {video_id}")
+            print(f"Video file: {video_file}")
+            print(f"Audio file: {audio_file}")
+            print(f"Description length: {len(description)} characters")
+            
+            try:
+                creator_info = {
+                    'creator_name': creator_name,
+                    'creator_id': creator_id,
+                    'view_count': info.get('view_count')  # Also getting view count from the API
+                }
+                
+                logger.info(f"Video processing completed for ID: {video_id}")
+                return video_id, video_file, audio_file, description, creator_info
+                
+            except Exception as e:
+                print(f"Error in video processing: {str(e)}")
+                raise
         except Exception as e:
-            print(f"Error in video processing: {str(e)}")
+            logger.error(f"Video processing failed: {str(e)}", exc_info=True)
             raise
 
 async def extract_data(url: str) -> tuple:

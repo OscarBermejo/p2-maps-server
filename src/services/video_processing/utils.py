@@ -10,13 +10,9 @@ import json
 import boto3
 from datetime import datetime
 from botocore.exceptions import ClientError
+from ...utils.logger_config import setup_cloudwatch_logging
 
-
-# Add the directory above the current one to the system path
-#sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-#from config import Config
-
-#logger = logger_config.get_logger(__name__)
+logger = setup_cloudwatch_logging()
 
 gmaps = googlemaps.Client(key=config('GOOGLE_MAPS_API_KEY'))
 
@@ -32,8 +28,9 @@ def query_chatgpt(description: str, text: str, transcription: str) -> str:
     Returns:
         str: Formatted recommendations or "No places of interest found"
     """
+    logger.info("Querying ChatGPT for places of interest")
     if not any([description, text, transcription]):
-        print("All input parameters are empty")
+        logger.warning("All input parameters are empty")
         return "No places of interest found"
 
     chatgpt_query = f"""
@@ -64,9 +61,10 @@ def query_chatgpt(description: str, text: str, transcription: str) -> str:
             max_tokens=150,
             temperature=0.3  # Reduced for more consistent outputs
         )
+        logger.info("Successfully queried ChatGPT")
         return response.choices[0].message.content.strip()
     except openai.APIError as e:
-        print(f"OpenAI API error: {str(e)}", exc_info=True)
+        logger.error(f"OpenAI API error: {str(e)}", exc_info=True)
         return "No places of interest found"
 
 def search_location(recommendations: str) -> Dict[str, Dict]:
@@ -84,13 +82,14 @@ def search_location(recommendations: str) -> Dict[str, Dict]:
         - Opening hours
         - Contact info
     """
+    logger.info("Searching for locations using Google Maps API")
     if not recommendations or "No places of interest found" in recommendations:
-        print("No valid recommendations to search")
+        logger.warning("No valid recommendations to search")
         return {}
 
     google_map_dict = {}
     places = [place.strip() for place in recommendations.splitlines() if place.strip()]
-    print(f'Places recommended: {places}')
+    logger.info(f'Places recommended: {places}')
 
     for location in places:
         if not location:

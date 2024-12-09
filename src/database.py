@@ -3,6 +3,9 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.orm import DeclarativeBase
+from src.utils.logger_config import setup_cloudwatch_logging
+
+logger = setup_cloudwatch_logging()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,8 +35,10 @@ class Base(DeclarativeBase):
 def get_db():
     db = SessionLocal()
     try:
+        logger.info("Database connection established")
         yield db
     finally:
+        logger.info("Database connection closed")
         db.close()
 
 # Initialize database (create all tables)

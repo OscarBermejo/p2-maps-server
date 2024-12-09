@@ -6,6 +6,8 @@ from src.models.models import RestaurantSchema, Restaurant, Video
 from src.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct
+from ..utils.logger_config import setup_cloudwatch_logging
+import logging
 
 # Create a FastAPI application instance
 app = FastAPI(
@@ -13,6 +15,8 @@ app = FastAPI(
     description="API for managing and displaying TikTok-featured restaurants",
     version="0.1.0"
 )
+
+logger = setup_cloudwatch_logging()
 
 # Configure CORS
 app.add_middleware(
@@ -25,51 +29,63 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
+    logger.info("Root endpoint accessed")
     return {"message": "Welcome to TikTok Restaurant Maps API"}
 
 @app.get("/restaurants")
 async def get_restaurants(db: Session = Depends(get_db)):
-    query_results = db.query(Restaurant)\
-        .join(Video, Restaurant.id == Video.restaurant_id)\
-        .with_entities(
-            Restaurant.id,
-            Restaurant.name,
-            Restaurant.location,
-            Restaurant.coordinates,
-            Restaurant.phone,
-            Restaurant.rating,
-            Restaurant.price_level,
-            Video.video_url
-        ).all()
-    
-    restaurant_dict = {}
-    
-    for result in query_results:
-        restaurant_id = result.id
-        if restaurant_id not in restaurant_dict:
-            restaurant_dict[restaurant_id] = {
-                "id": result.id,
-                "name": result.name,
-                "location": result.location,
-                "coordinates": result.coordinates,
-                "phone": result.phone,
-                "rating": result.rating,
-                "price_level": result.price_level,
-                "video_urls": []
-            }
+    logger.info("Fetching all restaurants")
+    try:
+        query_results = db.query(Restaurant)\
+            .join(Video, Restaurant.id == Video.restaurant_id)\
+            .with_entities(
+                Restaurant.id,
+                Restaurant.name,
+                Restaurant.location,
+                Restaurant.coordinates,
+                Restaurant.phone,
+                Restaurant.rating,
+                Restaurant.price_level,
+                Video.video_url
+            ).all()
         
-        if result.video_url:
-            restaurant_dict[restaurant_id]["video_urls"].append(result.video_url)
-    
-    return list(restaurant_dict.values())
+        logger.info(f"Successfully retrieved {len(query_results)} restaurant records")
+        
+        restaurant_dict = {}
+        
+        for result in query_results:
+            restaurant_id = result.id
+            if restaurant_id not in restaurant_dict:
+                restaurant_dict[restaurant_id] = {
+                    "id": result.id,
+                    "name": result.name,
+                    "location": result.location,
+                    "coordinates": result.coordinates,
+                    "phone": result.phone,
+                    "rating": result.rating,
+                    "price_level": result.price_level,
+                    "video_urls": []
+                }
+            
+            if result.video_url:
+                restaurant_dict[restaurant_id]["video_urls"].append(result.video_url)
+        
+        return list(restaurant_dict.values())
+    except Exception as e:
+        logger.error(f"Error fetching restaurants: {str(e)}", exc_info=True)
+        raise
 
 @app.get("/cities")
 async def get_cities(db: Session = Depends(get_db)):
-    # Query distinct cities from the city column
-    cities = db.query(distinct(Restaurant.city))\
-        .filter(Restaurant.city.isnot(None))\
-        .order_by(Restaurant.city)\
-        .all()
-    # Convert tuple of tuples to list of strings
-    return [city[0] for city in cities]
+    logger.info("Fetching distinct cities")
+    try:
+        cities = db.query(distinct(Restaurant.city))\
+            .filter(Restaurant.city.isnot(None))\
+            .order_by(Restaurant.city)\
+            .all()
+        logger.info(f"Successfully retrieved {len(cities)} distinct cities")
+        return [city[0] for city in cities]
+    except Exception as e:
+        logger.error(f"Error fetching cities: {str(e)}", exc_info=True)
+        raise
 

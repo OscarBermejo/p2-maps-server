@@ -3,6 +3,7 @@ import axios from 'axios';
 import Map from './components/Map';
 import CitySelector from './components/CitySelector';
 import './App.css';
+import logger from './utils/logger';
 
 function App() {
     const [restaurants, setRestaurants] = useState([]);
@@ -15,16 +16,22 @@ function App() {
 
     useEffect(() => {
         const fetchData = async () => {
+            logger.info('Initiating data fetch');
             try {
                 const [restaurantsRes, citiesRes] = await Promise.all([
                     axios.get(`${API_URL}/restaurants`),
                     axios.get(`${API_URL}/cities`)
                 ]);
                 
+                logger.info('Data fetch successful', {
+                    restaurantsCount: restaurantsRes.data.length,
+                    citiesCount: citiesRes.data.length
+                });
+                
                 setRestaurants(restaurantsRes.data);
                 setCities(citiesRes.data);
             } catch (err) {
-                console.error('Error fetching data:', err);
+                logger.error('Error fetching data', err);
                 setError(err.message);
             }
         };
@@ -32,6 +39,7 @@ function App() {
     }, [API_URL]);
 
     const handleCitySelect = (city) => {
+        logger.info('City selected', { city });
         setSelectedCity(city);
         if (city) {
             setShowCitySelector(false);

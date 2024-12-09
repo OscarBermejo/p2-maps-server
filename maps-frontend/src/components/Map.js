@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import axios from 'axios';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
+import logger from '../utils/logger';
 
 // At the top of your file, after imports
 console.log('Mapbox Token:', process.env.REACT_APP_MAPBOX_TOKEN);
@@ -41,6 +42,7 @@ function Map({ restaurants, selectedCity }) {
         if (!map.current || !selectedCity) return;
 
         const flyToCity = async () => {
+            logger.info('Flying to selected city', { city: selectedCity });
             try {
                 const response = await axios.get(
                     `https://api.mapbox.com/geocoding/v5/mapbox.places/${selectedCity}.json?access_token=${mapboxgl.accessToken}`
@@ -48,6 +50,7 @@ function Map({ restaurants, selectedCity }) {
                 
                 if (response.data.features.length > 0) {
                     const coordinates = response.data.features[0].center;
+                    logger.info('City coordinates found', { coordinates });
                     map.current.flyTo({
                         center: coordinates,
                         zoom: 12,
@@ -55,7 +58,7 @@ function Map({ restaurants, selectedCity }) {
                     });
                 }
             } catch (error) {
-                console.error('Error getting city coordinates:', error);
+                logger.error('Error getting city coordinates', error);
             }
         };
 
@@ -206,6 +209,7 @@ function Map({ restaurants, selectedCity }) {
     }, [restaurants, visitedRestaurants]);
 
     const handleSearch = async (term) => {
+        logger.info('Search initiated', { searchTerm: term });
         setSearchTerm(term);
         
         if (term.length > 2) {
@@ -229,8 +233,11 @@ function Map({ restaurants, selectedCity }) {
                 }));
 
                 setSearchResults([...filteredRestaurants, ...locations]);
+                logger.info('Search completed', { 
+                    resultsCount: searchResults.length 
+                });
             } catch (error) {
-                console.error('Error searching locations:', error);
+                logger.error('Error searching locations', error);
             }
         } else {
             setSearchResults([]);

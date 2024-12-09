@@ -22,7 +22,6 @@ from src.models.models import Video
 
 # Barcelona-specific restaurant hashtags
 BARCELONA_HASHTAGS = [
-    "barcelonarestaurants",
     "restaurantesbarcelona",
     "barcelonafood",
     "foodbarcelona",

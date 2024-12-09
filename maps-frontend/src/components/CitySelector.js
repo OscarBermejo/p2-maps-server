@@ -1,7 +1,13 @@
 import React from 'react';
 import './CitySelector.css';
+import logger from '../utils/logger';
 
 function CitySelector({ cities, onSelectCity, onClose }) {
+    const handleCitySelection = (city) => {
+        logger.info('City selection changed', { selectedCity: city });
+        onSelectCity(city);
+    };
+
     return (
         <div className="city-selector-overlay">
             <div className="city-selector-container">
@@ -12,7 +18,7 @@ function CitySelector({ cities, onSelectCity, onClose }) {
                     </div>
                     <h2>Select a City</h2>
                     <select 
-                        onChange={(e) => onSelectCity(e.target.value)}
+                        onChange={(e) => handleCitySelection(e.target.value)}
                         className="city-select"
                     >
                         <option value="">Choose a city...</option>

@@ -4,6 +4,9 @@ from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+from ..utils.logger_config import setup_cloudwatch_logging
+
+logger = setup_cloudwatch_logging()
 
 # Association table for restaurant tags
 restaurant_tags = Table('restaurant_tags', Base.metadata,
@@ -34,6 +37,10 @@ class Restaurant(Base):
     videos = relationship("Video", back_populates="restaurant")
     tags = relationship("Tag", secondary=restaurant_tags, back_populates="restaurants")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        logger.info(f"New Restaurant instance created: {self.name}")
+
 class Video(Base):
     __tablename__ = 'videos'
     # Stores video information: platform, URL, creator info
@@ -52,6 +59,10 @@ class Video(Base):
     restaurant_id = Column(Integer, ForeignKey('restaurants.id'))
     # Relationships
     restaurant = relationship("Restaurant", back_populates="videos")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        logger.info(f"New Video instance created for restaurant_id: {self.restaurant_id}")
 
 class Tag(Base):
     __tablename__ = 'tags'

@@ -7,9 +7,13 @@ import uuid
 from moviepy.editor import VideoFileClip
 import asyncio
 import aioboto3
+from ...utils.logger_config import setup_cloudwatch_logging
+
+logger = setup_cloudwatch_logging()
 
 class TextExtractor:
     def __init__(self, aws_region='eu-central-1'):
+        logger.info(f"Initializing TextExtractor with region: {aws_region}")
         # AWS configuration
         self.aws_region = aws_region
         self.kinesis_stream_name = 'p2-maps-server'
@@ -21,9 +25,11 @@ class TextExtractor:
         self.s3_client = boto3.client('s3', region_name=aws_region)
 
     def create_kinesis_stream_if_not_exists(self, stream_name):
+        logger.info(f"Checking Kinesis stream existence: {stream_name}")
         try:
             self.kinesis_client.describe_stream(StreamName=stream_name)
             print(f"Kinesis Video Stream '{stream_name}' already exists.")
+            logger.info(f"Kinesis stream '{stream_name}' verified/created successfully")
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ResourceNotFoundException':
                 self.kinesis_client.create_stream(
@@ -48,11 +54,14 @@ class TextExtractor:
         return response['DataEndpoint']
 
     def upload_video_to_s3(self, video_file_path, object_name):
+        logger.info(f"Uploading video to S3: {object_name}")
         try:
             self.s3_client.upload_file(video_file_path, self.bucket_name, object_name)
             print(f"Uploaded video to S3: s3://{self.bucket_name}/{object_name}")
+            logger.info(f"Successfully uploaded video to S3: {object_name}")
         except Exception as e:
             print(f"Failed to upload video to S3: {e}")
+            logger.error(f"S3 upload failed: {str(e)}", exc_info=True)
             raise
 
     def start_text_detection_s3(self, object_name, video_id):
@@ -143,6 +152,7 @@ class TextExtractor:
             raise
 
     def extract_text(self, video_file_path, video_id):
+        logger.info(f"Starting text extraction for video ID: {video_id}")
         try:
             print(f"[DEBUG] Starting text extraction for video: {video_id}")
             start_time = time.time()
@@ -155,7 +165,7 @@ class TextExtractor:
             # Get video length
             print("[DEBUG] Getting video length...")
             video_length = self.get_video_length(video_file_path)
-            print(f"[DEBUG] Video length: {video_length:.2f} seconds")
+            logger.info(f"Video length: {video_length:.2f} seconds")
             
             # Convert video
             print("[DEBUG] Converting video for Rekognition...")
@@ -224,11 +234,11 @@ class TextExtractor:
             total_processing_time = end_time - start_time
             print(f"[DEBUG] Total text extraction time: {total_processing_time:.2f} seconds")
 
+            logger.info(f"Text extraction completed. Found {len(extracted_texts)} unique texts")
             return result
 
         except Exception as e:
-            print(f"[ERROR] Major error in extract_text: {str(e)}")
-            print(f"[ERROR] Error type: {type(e)}")
+            logger.error(f"Text extraction failed: {str(e)}", exc_info=True)
             raise
 
 def main():
