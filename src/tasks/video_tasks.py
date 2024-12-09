@@ -5,40 +5,42 @@ from src.services.video_processing.extract_text import TextExtractor
 from src.services.video_processing.utils import query_chatgpt, search_location, store_video_data
 import asyncio
 import os
-import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 
 @shared_task
 def process_video(url: str):
     try:
         # 1. Download video and get metadata
-        print("[DEBUG] Starting video download...")
+        logger.info("Starting video download...")
         video_id, video_file, audio_file, description, creator_info = asyncio.run(VideoDownloader().process(url))
-        print(f"[DEBUG] Download completed. Video ID: {video_id}")
+        logger.info(f"Download completed. Video ID: {video_id}")
         
         # 2. Extract audio and text in parallel
-        print("[DEBUG] Starting audio extraction...")
+        logger.info("Starting audio extraction...")
         audio_data = AudioExtractor().transcribe_audio(audio_file)
-        print(f"[DEBUG] Audio extraction completed. Length: {len(audio_data)}")
-        print(f"[DEBUG] Audio data: {audio_data[:100]}...")  # Print first 100 chars
+        logger.info(f"Audio extraction completed. Length: {len(audio_data)}")
+        logger.debug(f"Audio data: {audio_data[:100]}...")  # First 100 chars
 
-        print("\n[DEBUG] Starting text extraction...")
+        logger.info("Starting text extraction...")
         try:
             text_data = TextExtractor().extract_text(video_file, video_id)
-            print(f"[DEBUG] Text extraction completed. Length: {len(text_data)}")
-            print(f"[DEBUG] Extracted text: {text_data[:100]}...")  # Print first 100 chars
+            logger.info(f"Text extraction completed. Length: {len(text_data)}")
+            logger.debug(f"Extracted text: {text_data[:100]}...")  # First 100 chars
         except Exception as e:
-            print(f"[ERROR] Text extraction failed: {str(e)}")
-            print(f"[ERROR] Error type: {type(e)}")
+            logger.error(f"Text extraction failed: {str(e)}", exc_info=True)
+            logger.error(f"Error type: {type(e)}")
             text_data = ""
         
         # 3. Extract location from text
-        print("\n[DEBUG] Starting ChatGPT query...")
+        logger.info("Starting ChatGPT query...")
         recommendations = query_chatgpt(description, text_data, audio_data)
-        print(f"[DEBUG] ChatGPT query completed: {recommendations}")
+        logger.info(f"ChatGPT query completed: {recommendations}")
         
         # 4. Get coordinates and place details
         places_data = search_location(recommendations)
-        print(places_data)
+        logger.info(f"Location search completed: {places_data}")
         
         # 5. Store all data
         store_video_data(
@@ -53,7 +55,7 @@ def process_video(url: str):
         )
 
         # 6. Cleanup files
-        print(f"[DEBUG] Cleaning up temporary files for video {video_id}")
+        logger.info(f"Cleaning up temporary files for video {video_id}")
         
         # Define file paths
         video_file = f"/home/ec2-user/maps-server/files/video/{video_id}.mp4"
@@ -62,14 +64,14 @@ def process_video(url: str):
         # Remove video file
         if os.path.exists(video_file):
             os.remove(video_file)
-            print(f"[DEBUG] Removed video file: {video_file}")
+            logger.info(f"Removed video file: {video_file}")
             
         # Remove audio file
         if os.path.exists(audio_file):
             os.remove(audio_file)
-            print(f"[DEBUG] Removed audio file: {audio_file}")
+            logger.info(f"Removed audio file: {audio_file}")
 
     except Exception as e:
-        print(f"[ERROR] Major error in process_video: {str(e)}")
-        print(f"[ERROR] Error type: {type(e)}")
+        logger.error(f"Major error in process_video: {str(e)}", exc_info=True)
+        logger.error(f"Error type: {type(e)}")
         raise

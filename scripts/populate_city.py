@@ -1,9 +1,5 @@
 import sys
 from pathlib import Path
-
-# Add the project root directory to Python path
-sys.path.append(str(Path(__file__).parent.parent))
-
 import re
 import googlemaps
 from sqlalchemy import create_engine
@@ -12,6 +8,13 @@ from src.models.models import Restaurant
 import urllib.parse
 from dotenv import load_dotenv
 import os
+import logging
+
+# Initialize logger
+logger = logging.getLogger(__name__)
+
+# Add the project root directory to Python path
+sys.path.append(str(Path(__file__).parent.parent))
 
 # Load environment variables
 load_dotenv()
@@ -37,10 +40,12 @@ def extract_coordinates_from_url(url):
         place_id_match = re.search(r'place_id:([A-Za-z0-9-_]+)', decoded_url)
         if place_id_match:
             place_id = place_id_match.group(1)
+            logger.debug(f"Found place_id: {place_id}")
             # Use Places API to get place details
             place_details = gmaps.place(place_id, fields=['geometry'])
             if place_details and 'result' in place_details:
                 location = place_details['result']['geometry']['location']
+                logger.info(f"Successfully extracted coordinates from place_id: {location}")
                 return location['lat'], location['lng']
         
         # If no place_id found, try the original patterns

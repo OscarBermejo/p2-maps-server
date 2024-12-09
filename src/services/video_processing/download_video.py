@@ -11,9 +11,10 @@ import os
 import ffmpeg
 import time
 from dataclasses import dataclass, field
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 from pathlib import Path
 from ...utils.logger_config import setup_cloudwatch_logging
+import re
 
 logger = setup_cloudwatch_logging()
 
@@ -202,6 +203,42 @@ class VideoDownloader:
         except Exception as e:
             logger.error(f"Video processing failed: {str(e)}", exc_info=True)
             raise
+
+    async def _download_implementation(self, url: str, video_id: str) -> str:
+        """Implementation of the video download using yt-dlp"""
+        output_file = os.path.join(self.config.video_path, f"{video_id}.mp4")
+        
+        ydl_opts = {
+            'format': 'best[ext=mp4]',
+            'outtmpl': output_file,
+            'quiet': True,
+            'no_warnings': True,
+            'extract_flat': False,
+            'concurrent_fragment_downloads': 1
+        }
+
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                logger.info(f"Downloading video from {url}")
+                ydl.download([url])
+                logger.info(f"Video downloaded successfully to {output_file}")
+                return output_file
+        except Exception as e:
+            logger.error(f"Error downloading video: {str(e)}", exc_info=True)
+            raise
+
+    def extract_video_id(self, url: str) -> Optional[str]:
+        """Extract video ID from TikTok URL"""
+        try:
+            # Match video ID pattern in TikTok URL
+            match = re.search(r'video/(\d+)', url)
+            if match:
+                return match.group(1)
+            logger.error(f"Failed to extract video ID: Invalid URL format")
+            return None
+        except Exception as e:
+            logger.error(f"Failed to extract video ID: {str(e)}", exc_info=True)
+            return None
 
 async def extract_data(url: str) -> tuple:
     """Convenience function for external use"""
