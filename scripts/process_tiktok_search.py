@@ -57,6 +57,25 @@ MELBOURNE_HASHTAGS = [
     "melbournefoodshare"
 ]
 
+# Antwerp-specific restaurant hashtags
+ANTWERP_HASHTAGS = [
+    "antwerpfood",
+    "antwerpeats",
+    "antwerpfoodie",
+    "restaurantsantwerpen",
+    "antwerpenrestaurants",
+    "eteninantwerpen",
+    "antwerpfoodguide",
+    "antwerprestaurants",
+    "foodantwerp",
+    "antwerpfoodspots",
+    "antwerpfoodscene",
+    "wheretoeatingantwerp",
+    "visitantwerp",
+    "antwerpbrunch",
+    "antwerpdining"
+]
+
 def video_exists(video_id: str, db_session) -> bool:
     logger.debug(f"Checking if video {video_id} exists in database")
     query = select(Video).where(Video.video_id == video_id)
@@ -135,9 +154,9 @@ if __name__ == "__main__":
     total_processed = 0
     failed_hashtags = []
     
-    logger.info(f"Starting to process {len(BARCELONA_HASHTAGS)} hashtags for Barcelona restaurants...")
+    logger.info(f"Starting to process {len(ANTWERP_HASHTAGS)} hashtags for Barcelona restaurants...")
     
-    for hashtag in BARCELONA_HASHTAGS:
+    for hashtag in ANTWERP_HASHTAGS:
         try:
             logger.info("="*50)
             logger.info(f"Processing hashtag: {hashtag}")
@@ -151,6 +170,6 @@ if __name__ == "__main__":
             
     logger.info("="*50)
     logger.info("Processing completed!")
-    logger.info(f"Successfully processed {total_processed}/{len(BARCELONA_HASHTAGS)} hashtags")
+    logger.info(f"Successfully processed {total_processed}/{len(ANTWERP_HASHTAGS)} hashtags")
     if failed_hashtags:
         logger.warning(f"Failed hashtags: {', '.join(failed_hashtags)}")
