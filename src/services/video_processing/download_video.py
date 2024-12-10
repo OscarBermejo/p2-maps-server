@@ -15,8 +15,10 @@ from typing import Dict, Tuple, Optional
 from pathlib import Path
 from ...utils.logger_config import setup_cloudwatch_logging
 import re
+import logging
 
-logger = setup_cloudwatch_logging()
+
+logger = logging.getLogger(__name__)
 
 # Configuration
 @dataclass

@@ -4,8 +4,9 @@ import sys
 import warnings 
 import time
 from ...utils.logger_config import setup_cloudwatch_logging
+import logging
 
-logger = setup_cloudwatch_logging()
+logger = logging.getLogger(__name__)
 
 # Suppress all warnings
 warnings.filterwarnings("ignore")

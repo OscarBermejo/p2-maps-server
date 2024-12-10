@@ -9,6 +9,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import distinct
 from ..utils.logger_config import setup_cloudwatch_logging
 import logging
+from fastapi.responses import JSONResponse
+
+# Setup logging first
+setup_cloudwatch_logging('maps-server')
+
+# Then get the logger for this file
+logger = logging.getLogger(__name__)
 
 # Create a FastAPI application instance
 app = FastAPI(
@@ -16,8 +23,6 @@ app = FastAPI(
     description="API for managing and displaying TikTok-featured restaurants",
     version="0.1.0"
 )
-
-logger = setup_cloudwatch_logging()
 
 # Configure CORS
 app.add_middleware(
@@ -71,7 +76,9 @@ async def get_restaurants(db: Session = Depends(get_db)):
             if result.video_url:
                 restaurant_dict[restaurant_id]["video_urls"].append(result.video_url)
         
-        return list(restaurant_dict.values())
+        response = JSONResponse(content=list(restaurant_dict.values()))
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
     except Exception as e:
         logger.error(f"Error fetching restaurants: {str(e)}", exc_info=True)
         raise

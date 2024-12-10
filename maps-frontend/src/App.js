@@ -13,7 +13,7 @@ function App() {
     const [showCitySelector, setShowCitySelector] = useState(true);
     const [selectedCity, setSelectedCity] = useState(null);
 
-    const API_URL = process.env.REACT_APP_API_URL || 'http://52.59.148.23:8000';
+    const API_URL = process.env.REACT_APP_API_URL || 'http://63.177.129.94:8000';
 
     useEffect(() => {
         const sessionId = uuidv4();

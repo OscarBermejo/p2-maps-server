@@ -11,8 +11,9 @@ import boto3
 from datetime import datetime
 from botocore.exceptions import ClientError
 from ...utils.logger_config import setup_cloudwatch_logging
+import logging
 
-logger = setup_cloudwatch_logging()
+logger = logging.getLogger(__name__)  
 
 gmaps = googlemaps.Client(key=config('GOOGLE_MAPS_API_KEY'))
 

@@ -8,8 +8,9 @@ from moviepy.editor import VideoFileClip
 import asyncio
 import aioboto3
 from ...utils.logger_config import setup_cloudwatch_logging
+import logging
 
-logger = setup_cloudwatch_logging()
+logger = logging.getLogger(__name__)
 
 class TextExtractor:
     def __init__(self, aws_region='eu-central-1'):
