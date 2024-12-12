@@ -1,238 +1,76 @@
 INFO:     Will watch for changes in these directories: ['/home/ec2-user/maps-server']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [2913] using StatReload
-INFO:     Started server process [2917]
+INFO:     Started reloader process [2891] using StatReload
+INFO:     Started server process [2899]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     127.0.0.1:33582 - "GET / HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57021 - "GET / HTTP/1.1" 200 OK
-2024-12-10 17:03:30,084 INFO sqlalchemy.engine.Engine SELECT DATABASE()
-2024-12-10 17:03:30,084 INFO sqlalchemy.engine.Engine [raw sql] {}
-2024-12-10 17:03:30,087 INFO sqlalchemy.engine.Engine SELECT @@sql_mode
-2024-12-10 17:03:30,087 INFO sqlalchemy.engine.Engine [raw sql] {}
-2024-12-10 17:03:30,088 INFO sqlalchemy.engine.Engine SELECT @@lower_case_table_names
-2024-12-10 17:03:30,088 INFO sqlalchemy.engine.Engine [raw sql] {}
-2024-12-10 17:03:30,089 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:03:30,093 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
+INFO:     127.0.0.1:45400 - "GET / HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60672 - "OPTIONS /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60673 - "OPTIONS /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60674 - "OPTIONS /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60672 - "POST /log HTTP/1.1" 200 OK
+2024-12-12 14:17:43,675 INFO sqlalchemy.engine.Engine SELECT DATABASE()
+2024-12-12 14:17:43,676 INFO sqlalchemy.engine.Engine [raw sql] {}
+2024-12-12 14:17:43,679 INFO sqlalchemy.engine.Engine SELECT @@sql_mode
+2024-12-12 14:17:43,679 INFO sqlalchemy.engine.Engine [raw sql] {}
+2024-12-12 14:17:43,680 INFO sqlalchemy.engine.Engine SELECT @@lower_case_table_names
+2024-12-12 14:17:43,680 INFO sqlalchemy.engine.Engine [raw sql] {}
+2024-12-12 14:17:43,681 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-12-12 14:17:43,683 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
 FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:03:30,094 INFO sqlalchemy.engine.Engine [generated in 0.00043s] {}
-2024-12-10 17:03:30,107 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57021 - "GET /restaurants HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57076 - "OPTIONS /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57078 - "OPTIONS /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57074 - "OPTIONS /log HTTP/1.1" 200 OK
-2024-12-10 17:04:28,997 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:04:28,997 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:04:28,998 INFO sqlalchemy.engine.Engine [cached since 58.9s ago] {}
-2024-12-10 17:04:29,002 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:04:29,004 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:04:29,005 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
+2024-12-12 14:17:43,684 INFO sqlalchemy.engine.Engine [generated in 0.00028s] {}
+2024-12-12 14:17:43,695 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-12-12 14:17:43,696 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
 FROM restaurants 
 WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:04:29,006 INFO sqlalchemy.engine.Engine [generated in 0.00030s] {}
-INFO:     82.169.198.84:57075 - "GET /restaurants HTTP/1.1" 200 OK
-2024-12-10 17:04:29,008 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57077 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57079 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57080 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57081 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57075 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57088 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57086 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57087 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57087 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57087 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57086 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57086 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57087 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57087 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57086 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57152 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57154 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57156 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:04:56,678 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:04:56,679 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:04:56,679 INFO sqlalchemy.engine.Engine [cached since 86.59s ago] {}
-2024-12-10 17:04:56,688 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:04:56,689 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
+2024-12-12 14:17:43,696 INFO sqlalchemy.engine.Engine [generated in 0.00029s] {}
+INFO:     212.78.176.34:60673 - "POST /log HTTP/1.1" 200 OK
+2024-12-12 14:17:43,698 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     212.78.176.34:60672 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60675 - "GET /restaurants HTTP/1.1" 200 OK
+2024-12-12 14:17:43,700 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     212.78.176.34:60676 - "GET /cities HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60674 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60673 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60672 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60676 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60675 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60676 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60673 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60716 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60717 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60718 - "POST /log HTTP/1.1" 200 OK
+2024-12-12 14:25:44,725 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-12-12 14:25:44,725 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
 FROM restaurants 
 WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:04:56,689 INFO sqlalchemy.engine.Engine [cached since 27.68s ago] {}
-2024-12-10 17:04:56,691 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57155 - "GET /restaurants HTTP/1.1" 200 OK
-2024-12-10 17:04:56,691 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57153 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57155 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57161 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57163 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57162 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57162 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57162 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57163 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57205 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57208 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57206 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:05:50,638 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:05:50,638 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
+2024-12-12 14:25:44,726 INFO sqlalchemy.engine.Engine [cached since 481s ago] {}
+2024-12-12 14:25:44,727 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-12-12 14:25:44,727 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
 FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:05:50,638 INFO sqlalchemy.engine.Engine [cached since 140.5s ago] {}
-2024-12-10 17:05:50,643 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:05:50,643 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
+2024-12-12 14:25:44,728 INFO sqlalchemy.engine.Engine [cached since 481s ago] {}
+2024-12-12 14:25:44,732 INFO sqlalchemy.engine.Engine ROLLBACK
+2024-12-12 14:25:44,732 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     212.78.176.34:20587 - "GET /restaurants HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60720 - "GET /cities HTTP/1.1" 200 OK
+INFO:     212.78.176.34:60716 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61078 - "OPTIONS /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61080 - "OPTIONS /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61079 - "OPTIONS /log HTTP/1.1" 200 OK
+2024-12-12 16:30:28,467 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-12-12 16:30:28,467 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
+FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
+2024-12-12 16:30:28,467 INFO sqlalchemy.engine.Engine [cached since 7965s ago] {}
+2024-12-12 16:30:28,472 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2024-12-12 16:30:28,473 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
 FROM restaurants 
 WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:05:50,643 INFO sqlalchemy.engine.Engine [cached since 81.64s ago] {}
-2024-12-10 17:05:50,644 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:05:50,644 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57207 - "GET /restaurants HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57209 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57207 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57207 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57206 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57208 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:05:55,310 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:05:55,311 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:05:55,311 INFO sqlalchemy.engine.Engine [cached since 145.2s ago] {}
-2024-12-10 17:05:55,320 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:05:55,321 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:05:55,322 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
-FROM restaurants 
-WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:05:55,322 INFO sqlalchemy.engine.Engine [cached since 86.32s ago] {}
-INFO:     82.169.198.84:57209 - "GET /restaurants HTTP/1.1" 200 OK
-2024-12-10 17:05:55,324 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57205 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57209 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57320 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57321 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57322 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:07:58,380 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:07:58,381 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:07:58,381 INFO sqlalchemy.engine.Engine [cached since 268.3s ago] {}
-2024-12-10 17:07:58,385 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:07:58,386 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
-FROM restaurants 
-WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:07:58,386 INFO sqlalchemy.engine.Engine [cached since 209.4s ago] {}
-2024-12-10 17:07:58,387 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:07:58,387 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57324 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57323 - "GET /restaurants HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57323 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57371 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57370 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57369 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57369 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57369 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57370 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57370 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57369 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57369 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57370 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57435 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57436 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57456 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57458 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57467 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57466 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57583 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57582 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57584 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:11:51,427 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:11:51,428 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
-FROM restaurants 
-WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:11:51,428 INFO sqlalchemy.engine.Engine [cached since 442.4s ago] {}
-2024-12-10 17:11:51,429 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:11:51,430 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:11:51,430 INFO sqlalchemy.engine.Engine [cached since 501.3s ago] {}
-2024-12-10 17:11:51,434 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:11:51,434 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57581 - "GET /restaurants HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57585 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57581 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57588 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57589 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57590 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57590 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57590 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57589 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57851 - "OPTIONS /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57854 - "OPTIONS /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57852 - "OPTIONS /log HTTP/1.1" 200 OK
-2024-12-10 17:18:41,936 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:18:41,936 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:18:41,936 INFO sqlalchemy.engine.Engine [cached since 911.8s ago] {}
-2024-12-10 17:18:41,941 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:18:41,941 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
-FROM restaurants 
-WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:18:41,942 INFO sqlalchemy.engine.Engine [cached since 852.9s ago] {}
-2024-12-10 17:18:41,943 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:18:41,943 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:57855 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57853 - "GET /restaurants HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57857 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57856 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57858 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:57857 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58008 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58009 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58012 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:20:23,193 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:20:23,194 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:20:23,194 INFO sqlalchemy.engine.Engine [cached since 1013s ago] {}
-2024-12-10 17:20:23,203 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:20:23,203 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:20:23,204 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
-FROM restaurants 
-WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:20:23,204 INFO sqlalchemy.engine.Engine [cached since 954.2s ago] {}
-INFO:     82.169.198.84:58011 - "GET /restaurants HTTP/1.1" 200 OK
-2024-12-10 17:20:23,207 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:58010 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58011 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58046 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58048 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58050 - "POST /log HTTP/1.1" 200 OK
-2024-12-10 17:20:45,877 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:20:45,878 INFO sqlalchemy.engine.Engine SELECT restaurants.id AS restaurants_id, restaurants.name AS restaurants_name, restaurants.location AS restaurants_location, restaurants.coordinates AS restaurants_coordinates, restaurants.phone AS restaurants_phone, restaurants.rating AS restaurants_rating, restaurants.price_level AS restaurants_price_level, videos.video_url AS videos_video_url 
-FROM restaurants INNER JOIN videos ON restaurants.id = videos.restaurant_id
-2024-12-10 17:20:45,878 INFO sqlalchemy.engine.Engine [cached since 1036s ago] {}
-2024-12-10 17:20:45,886 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2024-12-10 17:20:45,886 INFO sqlalchemy.engine.Engine ROLLBACK
-2024-12-10 17:20:45,887 INFO sqlalchemy.engine.Engine SELECT DISTINCT restaurants.city 
-FROM restaurants 
-WHERE restaurants.city IS NOT NULL ORDER BY restaurants.city
-2024-12-10 17:20:45,887 INFO sqlalchemy.engine.Engine [cached since 976.9s ago] {}
-INFO:     82.169.198.84:58047 - "GET /restaurants HTTP/1.1" 200 OK
-2024-12-10 17:20:45,890 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     82.169.198.84:58049 - "GET /cities HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58047 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58056 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58057 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58058 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58059 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58058 - "POST /log HTTP/1.1" 200 OK
-INFO:     82.169.198.84:58056 - "POST /log HTTP/1.1" 200 OK
+2024-12-12 16:30:28,473 INFO sqlalchemy.engine.Engine [cached since 7965s ago] {}
+2024-12-12 16:30:28,474 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     212.78.176.34:61078 - "POST /log HTTP/1.1" 200 OK
+2024-12-12 16:30:28,475 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     212.78.176.34:61081 - "GET /restaurants HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61082 - "GET /cities HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61080 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61079 - "POST /log HTTP/1.1" 200 OK
+INFO:     212.78.176.34:61078 - "POST /log HTTP/1.1" 200 OK

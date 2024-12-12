@@ -59,8 +59,6 @@ MELBOURNE_HASHTAGS = [
 
 # Antwerp-specific restaurant hashtags
 ANTWERP_HASHTAGS = [
-    "antwerpfood",
-    "antwerpeats",
     "antwerpfoodie",
     "restaurantsantwerpen",
     "antwerpenrestaurants",

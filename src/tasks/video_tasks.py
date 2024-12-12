@@ -4,6 +4,7 @@ from src.services.video_processing.extract_audio import AudioExtractor
 from src.services.video_processing.extract_text import TextExtractor
 from src.services.video_processing.utils import query_chatgpt, search_location, store_video_data
 import asyncio
+import concurrent.futures
 import os
 import logging
 
@@ -17,21 +18,43 @@ def process_video(url: str):
         video_id, video_file, audio_file, description, creator_info = asyncio.run(VideoDownloader().process(url))
         logger.info(f"Download completed. Video ID: {video_id}")
         
-        # 2. Extract audio and text in parallel
-        logger.info("Starting audio extraction...")
-        audio_data = AudioExtractor().transcribe_audio(audio_file)
-        logger.info(f"Audio extraction completed. Length: {len(audio_data)}")
-        logger.debug(f"Audio data: {audio_data[:100]}...")  # First 100 chars
+        # 2. Extract audio and text in parallel using ThreadPoolExecutor
+        logger.info("Starting parallel audio and text extraction...")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            # Submit both tasks
+            audio_future = executor.submit(
+                AudioExtractor().transcribe_audio, 
+                audio_file
+            )
+            text_future = executor.submit(
+                TextExtractor().extract_text,
+                video_file,
+                video_id
+            )
+            
+            # Wait for both tasks to complete
+            completed_tasks = concurrent.futures.wait(
+                [audio_future, text_future],
+                return_when=concurrent.futures.ALL_COMPLETED
+            )
 
-        logger.info("Starting text extraction...")
-        try:
-            text_data = TextExtractor().extract_text(video_file, video_id)
-            logger.info(f"Text extraction completed. Length: {len(text_data)}")
-            logger.debug(f"Extracted text: {text_data[:100]}...")  # First 100 chars
-        except Exception as e:
-            logger.error(f"Text extraction failed: {str(e)}", exc_info=True)
-            logger.error(f"Error type: {type(e)}")
-            text_data = ""
+            # Get audio data
+            try:
+                audio_data = audio_future.result()
+                logger.info(f"Audio extraction completed. Length: {len(audio_data)}")
+                logger.debug(f"Audio data: {audio_data[:100]}...")  # First 100 chars
+            except Exception as e:
+                logger.error(f"Audio extraction failed: {str(e)}", exc_info=True)
+                audio_data = ""
+            
+            # Get text data
+            try:
+                text_data = text_future.result()
+                logger.info(f"Text extraction completed. Length: {len(text_data)}")
+                logger.debug(f"Extracted text: {text_data[:100]}...")  # First 100 chars
+            except Exception as e:
+                logger.error(f"Text extraction failed: {str(e)}", exc_info=True)
+                text_data = ""
         
         # 3. Extract location from text
         logger.info("Starting ChatGPT query...")
