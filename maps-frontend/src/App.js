@@ -15,7 +15,7 @@ function App() {
 
     const API_URL = process.env.REACT_APP_API_URL || 
         (process.env.NODE_ENV === 'development' 
-            ? 'http://63.177.129.94:8001'    // Development API
+            ? 'http://localhost:8001'     // Development API
             : 'http://63.177.129.94:8000');    // Production API
 
     useEffect(() => {

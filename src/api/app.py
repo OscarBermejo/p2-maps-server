@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from datetime import datetime  
-from src.models.models import RestaurantSchema, Restaurant, Video
+from src.models.models import RestaurantSchema, Restaurant, Video, Tag
 from src.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct
@@ -42,41 +42,26 @@ async def root():
 async def get_restaurants(db: Session = Depends(get_db)):
     logger.info("Fetching all restaurants")
     try:
-        query_results = db.query(Restaurant)\
-            .join(Video, Restaurant.id == Video.restaurant_id)\
-            .with_entities(
-                Restaurant.id,
-                Restaurant.name,
-                Restaurant.location,
-                Restaurant.coordinates,
-                Restaurant.phone,
-                Restaurant.rating,
-                Restaurant.price_level,
-                Video.video_url
-            ).all()
+        restaurants = db.query(Restaurant).all()
         
-        logger.info(f"Successfully retrieved {len(query_results)} restaurant records")
-        
-        restaurant_dict = {}
-        
-        for result in query_results:
-            restaurant_id = result.id
-            if restaurant_id not in restaurant_dict:
-                restaurant_dict[restaurant_id] = {
-                    "id": result.id,
-                    "name": result.name,
-                    "location": result.location,
-                    "coordinates": result.coordinates,
-                    "phone": result.phone,
-                    "rating": result.rating,
-                    "price_level": result.price_level,
-                    "video_urls": []
-                }
+        result = []
+        for restaurant in restaurants:
+            videos = [video.video_url for video in restaurant.videos if video.video_url]
+            tags = [{"id": tag.id, "name": tag.name} for tag in restaurant.tags]
             
-            if result.video_url:
-                restaurant_dict[restaurant_id]["video_urls"].append(result.video_url)
+            result.append({
+                "id": restaurant.id,
+                "name": restaurant.name,
+                "location": restaurant.location,
+                "coordinates": restaurant.coordinates,
+                "phone": restaurant.phone,
+                "rating": restaurant.rating,
+                "price_level": restaurant.price_level,
+                "video_urls": videos,
+                "tags": tags
+            })
         
-        response = JSONResponse(content=list(restaurant_dict.values()))
+        response = JSONResponse(content=result)
         response.headers["Access-Control-Allow-Origin"] = "*"
         return response
     except Exception as e:
@@ -97,6 +82,15 @@ async def get_cities(db: Session = Depends(get_db)):
         logger.error(f"Error fetching cities: {str(e)}", exc_info=True)
         raise
 
+@app.get("/tags")
+async def get_tags(db: Session = Depends(get_db)):
+    logger.info("Fetching all tags")
+    try:
+        tags = db.query(Tag).all()
+        return [{"id": tag.id, "name": tag.name} for tag in tags]
+    except Exception as e:
+        logger.error(f"Error fetching tags: {str(e)}", exc_info=True)
+        raise
 
 @app.post("/log")
 async def log_frontend_event(event: dict):

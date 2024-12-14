@@ -23,6 +23,9 @@ function Map({ restaurants, selectedCity }) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const activePopup = useRef(null);
     const [visitedRestaurants, setVisitedRestaurants] = useState(new Set());
+    const [tags, setTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState(new Set());
+    const [filteredRestaurants, setFilteredRestaurants] = useState([]);
 
     // Initialize map
     useEffect(() => {
@@ -102,13 +105,13 @@ function Map({ restaurants, selectedCity }) {
 
     // Add markers when restaurants data changes
     useEffect(() => {
-        if (!map.current || !restaurants.length) return;
+        if (!map.current || !filteredRestaurants.length) return;
 
         // Clear existing markers
         markers.current.forEach(marker => marker.remove());
         markers.current = [];
 
-        restaurants.forEach((restaurant) => {
+        filteredRestaurants.forEach((restaurant) => {
             const coordinates = restaurant.coordinates.split(',').map(Number);
 
             // Create popup content
@@ -224,7 +227,7 @@ function Map({ restaurants, selectedCity }) {
                 activePopup.current = null;
             }
         };
-    }, [restaurants, visitedRestaurants]);
+    }, [filteredRestaurants, visitedRestaurants]);
 
     const handleSearch = async (term) => {
         logger.info('Search performed', {
@@ -290,6 +293,41 @@ function Map({ restaurants, selectedCity }) {
         setSearchTerm(result.name);
     };
 
+    const handleTagClick = (tagId) => {
+        setSelectedTags(prev => {
+            const newTags = new Set(prev);
+            if (newTags.has(tagId)) {
+                newTags.delete(tagId);
+            } else {
+                newTags.add(tagId);
+            }
+            return newTags;
+        });
+    };
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/tags');
+                setTags(response.data);
+            } catch (error) {
+                logger.error('Error fetching tags:', error);
+            }
+        };
+        fetchTags();
+    }, []);
+
+    useEffect(() => {
+        if (selectedTags.size === 0) {
+            setFilteredRestaurants(restaurants);
+        } else {
+            const filtered = restaurants.filter(restaurant => 
+                restaurant.tags?.some(tag => selectedTags.has(tag.id))
+            );
+            setFilteredRestaurants(filtered);
+        }
+    }, [restaurants, selectedTags]);
+
     return (
         <div className="map-wrapper">
             <button 
@@ -325,6 +363,17 @@ function Map({ restaurants, selectedCity }) {
                                 ))}
                             </div>
                         )}
+                    </div>
+                    <div className="tags-container">
+                        {tags.map(tag => (
+                            <button
+                                key={tag.id}
+                                className={`tag-button ${selectedTags.has(tag.id) ? 'selected' : ''}`}
+                                onClick={() => handleTagClick(tag.id)}
+                            >
+                                {tag.name}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>

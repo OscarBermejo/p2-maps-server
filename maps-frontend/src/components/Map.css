@@ -37,6 +37,8 @@
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .map-title {
@@ -202,6 +204,34 @@
 
 .menu-toggle-button:hover {
     background-color: rgba(255, 255, 255, 0.9);
+}
+
+.tags-container {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-button {
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.tag-button:hover {
+    background-color: #f0f0f0;
+}
+
+.tag-button.selected {
+    background-color: #0066cc;
+    color: white;
+    border-color: #0066cc;
 }
 
 
