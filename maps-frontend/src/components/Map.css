@@ -234,4 +234,41 @@
     border-color: #0066cc;
 }
 
+.price-filters-container {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.price-button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.price-button:hover {
+    background: #f0f0f0;
+}
+
+.price-button.selected {
+    background: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+.filter-section {
+    margin: 15px 0;
+}
+
+.filter-title {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #333;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 

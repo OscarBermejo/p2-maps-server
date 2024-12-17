@@ -11,6 +11,17 @@ console.log('Mapbox Token:', process.env.REACT_APP_MAPBOX_TOKEN);
 // Make sure the token is set before using it
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
+// Add this helper function near the other helper functions, before the return statement
+const formatTagName = (tagName) => {
+    return tagName
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+};
+
+// Add this helper function next to it
+const getPriceLevelLabel = (level) => '$'.repeat(level);
+
 function Map({ restaurants, selectedCity }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -26,6 +37,7 @@ function Map({ restaurants, selectedCity }) {
     const [tags, setTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState(new Set());
     const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+    const [selectedPriceLevels, setSelectedPriceLevels] = useState(new Set());
 
     // Initialize map
     useEffect(() => {
@@ -123,7 +135,7 @@ function Map({ restaurants, selectedCity }) {
                 <p class="popup-text">
                     <span>Tel: ${restaurant.phone || 'Not available'}</span>
                     ${restaurant.rating ? ` • Rating: ${restaurant.rating}` : ''}
-                    ${restaurant.price_level ? ` • Price: ${'€'.repeat(restaurant.price_level)}` : ''}
+                    ${restaurant.price_level ? ` • Price: ${'$'.repeat(restaurant.price_level)}` : ''}
                 </p>
             `;
 
@@ -318,15 +330,36 @@ function Map({ restaurants, selectedCity }) {
     }, []);
 
     useEffect(() => {
-        if (selectedTags.size === 0) {
-            setFilteredRestaurants(restaurants);
-        } else {
-            const filtered = restaurants.filter(restaurant => 
+        let filtered = restaurants;
+        
+        // Filter by tags if any are selected
+        if (selectedTags.size > 0) {
+            filtered = filtered.filter(restaurant => 
                 restaurant.tags?.some(tag => selectedTags.has(tag.id))
             );
-            setFilteredRestaurants(filtered);
         }
-    }, [restaurants, selectedTags]);
+        
+        // Filter by price levels if any are selected
+        if (selectedPriceLevels.size > 0) {
+            filtered = filtered.filter(restaurant => 
+                restaurant.price_level && selectedPriceLevels.has(restaurant.price_level)
+            );
+        }
+        
+        setFilteredRestaurants(filtered);
+    }, [restaurants, selectedTags, selectedPriceLevels]);
+
+    const handlePriceLevelClick = (level) => {
+        setSelectedPriceLevels(prev => {
+            const newLevels = new Set(prev);
+            if (newLevels.has(level)) {
+                newLevels.delete(level);
+            } else {
+                newLevels.add(level);
+            }
+            return newLevels;
+        });
+    };
 
     return (
         <div className="map-wrapper">
@@ -364,16 +397,35 @@ function Map({ restaurants, selectedCity }) {
                             </div>
                         )}
                     </div>
-                    <div className="tags-container">
-                        {tags.map(tag => (
-                            <button
-                                key={tag.id}
-                                className={`tag-button ${selectedTags.has(tag.id) ? 'selected' : ''}`}
-                                onClick={() => handleTagClick(tag.id)}
-                            >
-                                {tag.name}
-                            </button>
-                        ))}
+
+                    {/* Price level filters without title */}
+                    <div className="filter-section">
+                        <div className="tags-container">
+                            {[1, 2, 3, 4].map(level => (
+                                <button
+                                    key={`price-${level}`}
+                                    className={`tag-button ${selectedPriceLevels.has(level) ? 'selected' : ''}`}
+                                    onClick={() => handlePriceLevelClick(level)}
+                                >
+                                    {getPriceLevelLabel(level)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Tags container without title */}
+                    <div className="filter-section">
+                        <div className="tags-container">
+                            {tags.map(tag => (
+                                <button
+                                    key={tag.id}
+                                    className={`tag-button ${selectedTags.has(tag.id) ? 'selected' : ''}`}
+                                    onClick={() => handleTagClick(tag.id)}
+                                >
+                                    {formatTagName(tag.name)}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
