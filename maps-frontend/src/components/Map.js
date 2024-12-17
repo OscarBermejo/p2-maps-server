@@ -320,10 +320,21 @@ function Map({ restaurants, selectedCity }) {
     useEffect(() => {
         const fetchTags = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/tags');
+                const apiUrl = process.env.NODE_ENV === 'development' 
+                    ? 'http://localhost:8001' 
+                    : 'http://63.177.129.94:8000';
+                console.log('Fetching tags from:', `${apiUrl}/tags`);
+                
+                const response = await axios.get(`${apiUrl}/tags`);
+                console.log('Tags fetched successfully:', response.data);
                 setTags(response.data);
             } catch (error) {
-                logger.error('Error fetching tags:', error);
+                logger.error('Error fetching tags:', {
+                    error: error.message,
+                    status: error.response?.status,
+                    data: error.response?.data,
+                    config: error.config
+                });
             }
         };
         fetchTags();
