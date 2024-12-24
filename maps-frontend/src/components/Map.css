@@ -271,4 +271,45 @@
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+.slider-container {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.view-slider {
+    width: 80%;
+    height: 5px;
+    -webkit-appearance: none;
+    background: #ffffff;
+    outline: none;
+    border-radius: 3px;
+}
+
+/* Style the slider thumb (the dot) */
+.view-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #333;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.view-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #333;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.slider-label {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    padding: 0;
+}
+
 

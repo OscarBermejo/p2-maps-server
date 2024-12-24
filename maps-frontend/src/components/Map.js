@@ -38,6 +38,7 @@ function Map({ restaurants, selectedCity }) {
     const [selectedTags, setSelectedTags] = useState(new Set());
     const [filteredRestaurants, setFilteredRestaurants] = useState([]);
     const [selectedPriceLevels, setSelectedPriceLevels] = useState(new Set());
+    const [viewPercentageFilter, setViewPercentageFilter] = useState(100);
 
     // Initialize map
     useEffect(() => {
@@ -340,17 +341,37 @@ function Map({ restaurants, selectedCity }) {
         fetchTags();
     }, []);
 
+    // Add this function to calculate total views for a restaurant
+    const getRestaurantTotalViews = (restaurant) => {
+        return restaurant.videos?.reduce((sum, video) => sum + (video.view_count || 0), 0) || 0;
+    };
+
+    // Modify the useEffect that handles filtering
     useEffect(() => {
         let filtered = restaurants;
         
-        // Filter by tags if any are selected
+        // Sort restaurants by total views and apply percentage filter
+        if (viewPercentageFilter < 100) {
+            const restaurantsWithViews = restaurants.map(restaurant => ({
+                ...restaurant,
+                totalViews: getRestaurantTotalViews(restaurant)
+            }));
+            
+            // Sort by total views (descending)
+            restaurantsWithViews.sort((a, b) => b.totalViews - a.totalViews);
+            
+            // Calculate how many restaurants to keep
+            const keepCount = Math.ceil((restaurantsWithViews.length * viewPercentageFilter) / 100);
+            filtered = restaurantsWithViews.slice(0, keepCount);
+        }
+
+        // Apply existing filters
         if (selectedTags.size > 0) {
             filtered = filtered.filter(restaurant => 
                 restaurant.tags?.some(tag => selectedTags.has(tag.id))
             );
         }
         
-        // Filter by price levels if any are selected
         if (selectedPriceLevels.size > 0) {
             filtered = filtered.filter(restaurant => 
                 restaurant.price_level && selectedPriceLevels.has(restaurant.price_level)
@@ -358,7 +379,7 @@ function Map({ restaurants, selectedCity }) {
         }
         
         setFilteredRestaurants(filtered);
-    }, [restaurants, selectedTags, selectedPriceLevels]);
+    }, [restaurants, selectedTags, selectedPriceLevels, viewPercentageFilter]);
 
     const handlePriceLevelClick = (level) => {
         setSelectedPriceLevels(prev => {
@@ -407,6 +428,24 @@ function Map({ restaurants, selectedCity }) {
                                 ))}
                             </div>
                         )}
+                    </div>
+
+                    {/* Fix the slider input */}
+                    <div className="filter-section">
+                        <div className="slider-container">
+                            <label htmlFor="view-filter">
+                                Top {100 - viewPercentageFilter + 1}% Restaurants by Views
+                            </label>
+                            <input
+                                type="range"
+                                id="view-filter"
+                                min="0"
+                                max="99"
+                                value={100 - viewPercentageFilter}
+                                onChange={(e) => setViewPercentageFilter(100 - parseInt(e.target.value))}
+                                className="view-slider"
+                            />
+                        </div>
                     </div>
 
                     {/* Price level filters without title */}
