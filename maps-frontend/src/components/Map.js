@@ -430,11 +430,30 @@ function Map({ restaurants, selectedCity }) {
                         )}
                     </div>
 
-                    {/* Fix the slider input */}
+                    {/* Add curated tag filter first */}
+                    <div className="filter-section">
+                        <div className="curated-section">
+                            <span className="curated-text">Show only</span>
+                            {tags
+                                .filter(tag => tag.name === 'curated')
+                                .map(tag => (
+                                    <button
+                                        key={tag.id}
+                                        className={`tag-button ${selectedTags.has(tag.id) ? 'selected' : ''}`}
+                                        onClick={() => handleTagClick(tag.id)}
+                                    >
+                                        {formatTagName(tag.name)}
+                                    </button>
+                                ))}
+                            <span className="curated-text">restaurants</span>
+                        </div>
+                    </div>
+
+                    {/* View percentage filter */}
                     <div className="filter-section">
                         <div className="slider-container">
                             <label htmlFor="view-filter">
-                                Top {100 - viewPercentageFilter + 1}% Restaurants by Views
+                                Top {viewPercentageFilter}% Restaurants by Views
                             </label>
                             <input
                                 type="range"
@@ -448,7 +467,7 @@ function Map({ restaurants, selectedCity }) {
                         </div>
                     </div>
 
-                    {/* Price level filters without title */}
+                    {/* Price level filters */}
                     <div className="filter-section">
                         <div className="tags-container">
                             {[1, 2, 3, 4].map(level => (
@@ -463,18 +482,20 @@ function Map({ restaurants, selectedCity }) {
                         </div>
                     </div>
 
-                    {/* Tags container without title */}
+                    {/* Rest of the tags */}
                     <div className="filter-section">
                         <div className="tags-container">
-                            {tags.map(tag => (
-                                <button
-                                    key={tag.id}
-                                    className={`tag-button ${selectedTags.has(tag.id) ? 'selected' : ''}`}
-                                    onClick={() => handleTagClick(tag.id)}
-                                >
-                                    {formatTagName(tag.name)}
-                                </button>
-                            ))}
+                            {tags
+                                .filter(tag => tag.name !== 'curated')
+                                .map(tag => (
+                                    <button
+                                        key={tag.id}
+                                        className={`tag-button ${selectedTags.has(tag.id) ? 'selected' : ''}`}
+                                        onClick={() => handleTagClick(tag.id)}
+                                    >
+                                        {formatTagName(tag.name)}
+                                    </button>
+                                ))}
                         </div>
                     </div>
                 </div>
