@@ -38,7 +38,7 @@ function Map({ restaurants, selectedCity }) {
     const [selectedTags, setSelectedTags] = useState(new Set());
     const [filteredRestaurants, setFilteredRestaurants] = useState([]);
     const [selectedPriceLevels, setSelectedPriceLevels] = useState(new Set());
-    const [viewPercentageFilter, setViewPercentageFilter] = useState(100);
+    const [ratingFilter, setRatingFilter] = useState(0);
 
     // Initialize map
     useEffect(() => {
@@ -341,28 +341,15 @@ function Map({ restaurants, selectedCity }) {
         fetchTags();
     }, []);
 
-    // Add this function to calculate total views for a restaurant
-    const getRestaurantTotalViews = (restaurant) => {
-        return restaurant.videos?.reduce((sum, video) => sum + (video.view_count || 0), 0) || 0;
-    };
-
     // Modify the useEffect that handles filtering
     useEffect(() => {
         let filtered = restaurants;
         
-        // Sort restaurants by total views and apply percentage filter
-        if (viewPercentageFilter < 100) {
-            const restaurantsWithViews = restaurants.map(restaurant => ({
-                ...restaurant,
-                totalViews: getRestaurantTotalViews(restaurant)
-            }));
-            
-            // Sort by total views (descending)
-            restaurantsWithViews.sort((a, b) => b.totalViews - a.totalViews);
-            
-            // Calculate how many restaurants to keep
-            const keepCount = Math.ceil((restaurantsWithViews.length * viewPercentageFilter) / 100);
-            filtered = restaurantsWithViews.slice(0, keepCount);
+        // Apply rating filter
+        if (ratingFilter > 0) {
+            filtered = filtered.filter(restaurant => 
+                restaurant.rating && restaurant.rating >= ratingFilter
+            );
         }
 
         // Apply existing filters
@@ -379,7 +366,7 @@ function Map({ restaurants, selectedCity }) {
         }
         
         setFilteredRestaurants(filtered);
-    }, [restaurants, selectedTags, selectedPriceLevels, viewPercentageFilter]);
+    }, [restaurants, selectedTags, selectedPriceLevels, ratingFilter]);
 
     const handlePriceLevelClick = (level) => {
         setSelectedPriceLevels(prev => {
@@ -452,16 +439,19 @@ function Map({ restaurants, selectedCity }) {
                     {/* View percentage filter */}
                     <div className="filter-section">
                         <div className="slider-container">
-                            <label htmlFor="view-filter">
-                                Top {viewPercentageFilter}% Restaurants by Views
+                            <label htmlFor="rating-filter">
+                                {ratingFilter > 0 
+                                    ? `Show restaurants rated ${ratingFilter.toFixed(1)}+ stars`
+                                    : 'Show all restaurants'}
                             </label>
                             <input
                                 type="range"
-                                id="view-filter"
+                                id="rating-filter"
                                 min="0"
-                                max="99"
-                                value={100 - viewPercentageFilter}
-                                onChange={(e) => setViewPercentageFilter(100 - parseInt(e.target.value))}
+                                max="5"
+                                step="0.1"
+                                value={ratingFilter}
+                                onChange={(e) => setRatingFilter(parseFloat(e.target.value))}
                                 className="view-slider"
                             />
                         </div>

@@ -92,7 +92,7 @@
 }
 
 .popup-title {
-    margin: 0 0 10px 0; /* Added bottom margin of 10px */
+    margin: 0 0 10px 0;
     font-size: 24px;
     font-weight: bold;
     text-align: center;
@@ -100,7 +100,7 @@
 }
 
 .popup-text {
-    margin: 0 0 10px 0; /* Added bottom margin of 10px */
+    margin: 0 0 10px 0;
     text-align: center;
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 12px;
