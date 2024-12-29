@@ -282,6 +282,7 @@
     width: 80%;
     height: 5px;
     -webkit-appearance: none;
+    appearance: none;
     background: #ffffff;
     outline: none;
     border-radius: 3px;
