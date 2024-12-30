@@ -39,6 +39,8 @@ function Map({ restaurants, selectedCity }) {
     const [filteredRestaurants, setFilteredRestaurants] = useState([]);
     const [selectedPriceLevels, setSelectedPriceLevels] = useState(new Set());
     const [ratingFilter, setRatingFilter] = useState(0);
+    const [activeRestaurant] = useState(null);
+    const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
     // Initialize map
     useEffect(() => {
@@ -343,20 +345,44 @@ function Map({ restaurants, selectedCity }) {
 
     // Modify the useEffect that handles filtering
     useEffect(() => {
-        let filtered = restaurants;
+        console.log('Starting filter effect...');
+        console.log('Selected city:', selectedCity);
         
-        // Apply rating filter
+        // First filter by selected city
+        let filtered = selectedCity && selectedCity.trim() 
+            ? restaurants.filter(restaurant => {
+                return restaurant.location && 
+                       restaurant.location.toLowerCase().includes(selectedCity.toLowerCase().trim());
+              })
+            : [];
+
+        console.log('Filtered results:', filtered);
+        
+        // Then apply other filters
         if (ratingFilter > 0) {
             filtered = filtered.filter(restaurant => 
                 restaurant.rating && restaurant.rating >= ratingFilter
             );
         }
 
-        // Apply existing filters
         if (selectedTags.size > 0) {
-            filtered = filtered.filter(restaurant => 
-                restaurant.tags?.some(tag => selectedTags.has(tag.id))
+            // Separate curated tag from other tags
+            const curatedTag = Array.from(selectedTags).find(tagId => 
+                tags.find(t => t.id === tagId && t.name === 'curated')
             );
+            
+            const otherTags = Array.from(selectedTags).filter(tagId => 
+                !tags.find(t => t.id === tagId && t.name === 'curated')
+            );
+
+            // Apply both conditions if they exist
+            filtered = filtered.filter(restaurant => {
+                const hasCurated = !curatedTag || restaurant.tags?.some(tag => tag.id === curatedTag);
+                const hasOtherTags = otherTags.length === 0 || 
+                    otherTags.every(tagId => restaurant.tags?.some(tag => tag.id === tagId));
+                
+                return hasCurated && hasOtherTags;
+            });
         }
         
         if (selectedPriceLevels.size > 0) {
@@ -366,7 +392,7 @@ function Map({ restaurants, selectedCity }) {
         }
         
         setFilteredRestaurants(filtered);
-    }, [restaurants, selectedTags, selectedPriceLevels, ratingFilter]);
+    }, [restaurants, selectedTags, selectedPriceLevels, ratingFilter, selectedCity, tags]);
 
     const handlePriceLevelClick = (level) => {
         setSelectedPriceLevels(prev => {
@@ -378,6 +404,103 @@ function Map({ restaurants, selectedCity }) {
             }
             return newLevels;
         });
+    };
+
+    const handleRestaurantClick = (restaurant) => {
+        // If clicking the same restaurant that's already selected, deselect it
+        if (selectedRestaurant && selectedRestaurant.id === restaurant.id) {
+            setSelectedRestaurant(null);
+            // If there's an active popup, remove it
+            if (activePopup.current) {
+                activePopup.current.remove();
+                activePopup.current = null;
+            }
+            logger.info('Restaurant deselected', {
+                restaurantId: restaurant.id,
+                restaurantName: restaurant.name,
+            });
+        } else {
+            // Otherwise, select the new restaurant
+            setSelectedRestaurant(restaurant);
+            
+            // Find the marker for this restaurant and trigger its click
+            const coordinates = restaurant.coordinates.split(',').map(Number);
+            
+            // First center the map on the marker
+            map.current.flyTo({
+                center: [coordinates[1], coordinates[0]],
+                zoom: map.current.getZoom(),
+                duration: 500  // Animation duration in milliseconds
+            });
+    
+            // Create and show the popup for this restaurant
+            const popupContent = document.createElement('div');
+            popupContent.className = 'popup-container';
+            popupContent.innerHTML = `
+                <h3 class="popup-title">${restaurant.name}</h3>
+                <p class="popup-text">${restaurant.location}</p>
+                <p class="popup-text">
+                    <span>Tel: ${restaurant.phone || 'Not available'}</span>
+                    ${restaurant.rating ? ` • Rating: ${restaurant.rating}` : ''}
+                    ${restaurant.price_level ? ` • Price: ${'$'.repeat(restaurant.price_level)}` : ''}
+                </p>
+            `;
+    
+            // Add videos if available
+            if (restaurant.video_urls && restaurant.video_urls.length > 0) {
+                const videosContainer = document.createElement('div');
+                videosContainer.className = `videos-scroll-container ${restaurant.video_urls.length === 1 ? 'single-video' : ''}`;
+                restaurant.video_urls.forEach((url, index) => {
+                    const videoId = url.split('/video/')[1];
+                    const embedUrl = `https://www.tiktok.com/embed/v2/${videoId}`;
+                    
+                    videosContainer.innerHTML += `
+                        <div class="video-item">
+                            <div class="video-wrapper">
+                                <iframe
+                                    src="${embedUrl}"
+                                    class="tiktok-embed"
+                                    allowFullScreen
+                                    scrolling="no"
+                                    title="TikTok video ${index + 1} for ${restaurant.name}"
+                                ></iframe>
+                            </div>
+                        </div>
+                    `;
+                });
+                popupContent.appendChild(videosContainer);
+            }
+    
+            // If there's already an active popup, remove it
+            if (activePopup.current) {
+                activePopup.current.remove();
+            }
+    
+            // Create and show the new popup
+            activePopup.current = new mapboxgl.Popup({
+                maxWidth: '220px',
+                className: 'custom-popup',
+                closeButton: true,
+                closeOnClick: false,
+                anchor: 'center',
+                offset: [0, 0]
+            })
+            .setLngLat([coordinates[1], coordinates[0]])
+            .setDOMContent(popupContent)
+            .addTo(map.current);
+    
+            // Add event listener when popup closes
+            activePopup.current.on('close', () => {
+                activePopup.current = null;
+                setSelectedRestaurant(null);
+            });
+    
+            logger.info('Restaurant clicked', {
+                restaurantId: restaurant.id,
+                restaurantName: restaurant.name,
+                restaurant: restaurant,
+            });
+        }
     };
 
     return (
@@ -487,6 +610,31 @@ function Map({ restaurants, selectedCity }) {
                                     </button>
                                 ))}
                         </div>
+                    </div>
+
+                    {/* Add the restaurant list */}
+                    <div className="restaurants-list-container">
+                        {filteredRestaurants.map(restaurant => (
+                            <div
+                                key={restaurant.id}
+                                className={`restaurant-list-item ${activeRestaurant === restaurant.id ? 'active' : ''}`}
+                                onClick={() => handleRestaurantClick(restaurant)}
+                            >
+                                <div className="restaurant-name">{restaurant.name}</div>
+                                <div className="restaurant-details">
+                                    {restaurant.rating && (
+                                        <span className="restaurant-rating">
+                                            ★ {restaurant.rating.toFixed(1)}
+                                        </span>
+                                    )}
+                                    {restaurant.price_level && (
+                                        <span>
+                                            {'$'.repeat(restaurant.price_level)}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
